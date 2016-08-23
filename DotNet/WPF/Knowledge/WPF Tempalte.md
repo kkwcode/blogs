@@ -23,6 +23,7 @@
         </Style>
 ```
 运行结果：  
+![](.\Resources\1.png)
 注意点：  
 示例代码中1，2，3片段用那一个都是可以的，相同的结果，其中2，3是等价的，使用ContentPresenter时会隐式的进行TemplateBinding，这的确是经常需要的。其中1最终也是使用了ContentPresenter用来呈现内容，所以不建议使用ContentControl，有点大才小用的赶脚。实际上也是如此，ContentControl中包含ContentPresenter.
 ## ItemsPanelTemplate  
@@ -69,6 +70,7 @@
         <Button Content="{StaticResource p1}" ContentTemplate="{StaticResource dt1}"  HorizontalAlignment="Left" Margin="204,275,0,0" VerticalAlignment="Top" Width="193" Height="35"/>
 ```  
 运行结果：  
+![](.\Resources\2.png)
 解析：数据模板用来呈现数据，在这个例子中，直接将Button的内容指向一个Person类，若不指定其DataTemplate，则Button的内容只会简单的显示为绑定对象的ToString内容，指定了Person的显示方式，则会按照预期的想法进行呈现。
 ## HierarchicalDataTemplate  
 该数据模板主要应用于比较复杂的树形结构中，HierarchicalDataTemplate从DataTemplate继承而来，其用法也相当的简单，这里给一个简单的示例即可。
@@ -150,7 +152,8 @@ public partial class MainWindow : Window
         }
     }
 ```  
-运行结果：
+运行结果：  
+![](.\Resources\3.png)
 ## StyleSelector and DataTemplateSelector  
 考虑到这样一种场景，集合控件需要根据不同的行去设置不同的行样式及内容呈现方式，这就用到了这两个Selector，需要继承这两个类，定义自己需要的效果。同样的，以代码作为示例，并演示相关结果
 ```cs
@@ -237,8 +240,7 @@ class MyStyleSelector : StyleSelector
     <ListBox ItemsSource="{StaticResource array}" ItemContainerStyleSelector="{ StaticResource mySelector}" ItemTemplateSelector="{ StaticResource myDataSelector}">
     </ListBox >
 ```  
-运行结果：
-     
-
+运行结果：  
+![](.\Resources\4.png)
 *DateTemplate缺陷*
 http://www.cnblogs.com/nankezhishi/archive/2009/07/08/datatemplate.html
