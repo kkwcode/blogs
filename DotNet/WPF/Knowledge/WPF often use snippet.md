@@ -1,5 +1,5 @@
-1. Xaml中添加后台代码
-![](Resources/csharpcodeinxaml.png)
+1. Xaml中添加后台代码  
+![](Resources/csharpcodeinxaml.PNG)
 2. Binding中的显示更新到源或UI
 ```cs   
    BindingExpression binding = tb.GetBindingExpression(TextBox. TextProperty);
