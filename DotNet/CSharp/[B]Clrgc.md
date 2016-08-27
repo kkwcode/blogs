@@ -80,6 +80,7 @@ internal sealed class SomeType{
 Safehandle继承自CriticalFinalizerObject，首次构造其派生对象时，CLR立即对继承层次的所有Finalize方法进行JIT编译，可确保当对象为判定为垃圾时，本机资源肯定得以释放。
 注：内存吃紧时，可能没有足够的内存编译Finalize方法，这会阻止Finalize方法的执行，造成内存泄漏；Appdomain被宿主应用应用程序强行中断，CLR将调用CriticalFinalizerObject派生类型的Finalize方法；CriticalFinalizerObject的Finalize方法总是在非CriticalFinalizerObject类型的Finalize方法之后调用，这样，托管资源类可以在自己的Finalize中成功的访问CriticalFinalizerObject，如FileStream可以放心的在自己的Finalize方法中将数据Flush到磁盘，它知道磁盘文件还未关闭。
 使用：FileStream的内部实现就是包装了一个SafeFileHandle，该类间接继承自SafeHandle，从而确保文件句柄总可以释放。
+实例：[FileStreamGC实例]([BC]FileStreamGC实例.md)
 ### 3.2 Dispose模式
 如果想允许使用者控制类所包装的本机资源的生存期，就必须实现IDisposable接口。
 注：如果类定义的字段实现了Dispose模式，那么该类也应该实现Dispose模式。如FileStream的实现：
