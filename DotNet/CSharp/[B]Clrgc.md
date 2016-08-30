@@ -81,9 +81,8 @@ internal sealed class SomeType{
 Safehandle继承自CriticalFinalizerObject，首次构造其派生对象时，CLR立即对继承层次的所有Finalize方法进行JIT编译，可确保当对象为判定为垃圾时，本机资源肯定得以释放。
 > 1. 内存吃紧时，可能没有足够的内存编译Finalize方法，这会阻止Finalize方法的执行，造成内存泄漏；
 > 2. Appdomain被宿主应用应用程序强行中断，CLR将调用CriticalFinalizerObject派生类型的Finalize方法；
-> 3. CriticalFinalizerObject的Finalize方法总是在非CriticalFinalizerObject类型的Finalize方法之后调用，这样，托管资源类可以在自己的Finaliz
+> 3. CriticalFinalizerObject的Finalize方法总是在非CriticalFinalizerObject类型的Finalize方法之后调用，这样，托管资源类可以在自己的Finalize中成功的访问CriticalFinalizerObject，如FileStream可以放心的在自己的Finalize方法中将数据Flush到磁盘，它知道磁盘文件还未关闭。
 
-e中成功的访问CriticalFinalizerObject，如FileStream可以放心的在自己的Finalize方法中将数据Flush到磁盘，它知道磁盘文件还未关闭。
 使用：FileStream的内部实现就是包装了一个SafeFileHandle，该类间接继承自SafeHandle，从而确保文件句柄总可以释放。
 实例：[FileStreamGC实例]([BC]FileStreamGC实例.md)
 ### 3.3 Dispose模式
@@ -152,32 +151,31 @@ sw.Dispose();
 ```
 > 调用Dispose不会将托管对象从托管堆中删除。只有在垃圾回收后，托管堆的内存才会得以释放。
 
-### 3.3 GC为本机资源提供的其他功能
+### 3.4 GC为本机资源提供的其他功能
 #### AddMemoryPressure及RemoveMemoryPressure
 本机资源占用较多时，而包装其资源的托管资源占用很少的内存，GC的垃圾回收算法可能并不准确，这两个方法便是对此修正。
 #### HandleCollector
 用来创建有限的资源，超过数量时就会进行垃圾回收。
-### 3.4 终结的内部工作原理
+### 3.5 终结的内部工作原理
 ![8.jpg](Resources/8.jpg)
 注：
 1. 终结线程是一个高优先级的专用线程，CLR并不保证这些线程在何时启动执行。
 2. 可终结对象无法通过一次垃圾收集操作就被回收，而是需要两次，也就是说，可终结对象被销毁前，通常都会被提升到1代，变成一种开销较高的对象。
     
-### 3.5 手动监视和控制对象生存
+### 3.6 手动监视和控制对象生存
 CLR为每个AppDomain提供了一个GC句柄表，允许应用程序监视或手动控制对象的生存期。
 **GCHandle**
-- Weak
+- `Weak`
   监控对象的生命周期，对象被判定不可达，但可能还在内存中。
-- WeakTrackResurrection
+- `WeakTrackResurrection`
   监控对象的生命周期，对象不在内存中。
-- Normal
+- `Normal`
   固定对象，不会回收该对象，会晕行内存压缩
-- Pinned
+- `Pinned`
   固定对象，不会回收，不会更改其内存位置
 注：使用CLR的P/Invoke机制调用方法时，CLR会自动帮你固定实参，并在方法返回时自动解除;C#提供了一个fixed语句，它能在代码块中固定对象。
-
-**WeakRefrence<T>**
-**ConditionalWeakTable<TKey,TValue>**
+`WeakRefrence<T>`
+`ConditionalWeakTable<TKey,TValue>`
 将一些数据与另一个实体关联，key是弱引用，若key在内存中，值一定在内存中。
 
 **引用**
