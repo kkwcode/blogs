@@ -28,7 +28,8 @@ CLR使用一种引用跟踪算法。开始GC时，暂停所有线程，然后进
 ![6.png](Resources/6.png)  
 再分配对象时，此时发现0代空间不足，需要进行垃圾回收，发现1代同样超过预算，便进行0、1代的垃圾回收，没有被回收的1代对象提升到2代。  
 ![7.png](Resources/7.png)  
-注：垃圾回收在回收第0代内存时，若没有多少对存活，CLR会增加0代的预算，这样，垃圾回收次数减少，但执行GC时耗时增加。相反，回收的内存多时，便会减小0代的预算。==垃圾回收器使用类似的算法调整第1代及2代的预算==。也就是说，垃圾回收器会根据应用程序的要求进行内存负载来自动优化。
+> 垃圾回收在回收第0代内存时，若没有多少对存活，CLR会增加0代的预算，这样，垃圾回收次数减少，但执行GC时耗时增加。相反，回收的内存多时，便会减小0代的预算。==垃圾回收器使用类似的算法调整第1代及2代的预算==。也就是说，垃圾回收器会根据应用程序的要求进行内存负载来自动优化。
+
 ### 2.1 垃圾回收触发条件
 - 超过0代预算时触发
 - 调用GC.Collect
@@ -71,17 +72,18 @@ internal sealed class SomeType{
     }
 }
 ```
-注：
+> 
 1. 其定义虽于C++中的析构语法相同，但不同的是，CLR中的析构并非确定性析构，即无法得知析构函数的确切调用时间。
 2. 可终结对象在回收时必须存活，生存期变长，造成它被提升到上一代，同时，其所引用对象也被提升到上一代。尽量避免定义可终结类型。  
 3. CLR使用一个特殊的，高优先级的专用线程调用Finalize方法。如果Finalize方法阻塞，该特殊线程就调用不了任何更多的Finalize方法，只要程序运行，就会内存泄漏，应小心。
 
 ### 3.2 FCL中提供释放本机资源的辅助类SafeHandle
 Safehandle继承自CriticalFinalizerObject，首次构造其派生对象时，CLR立即对继承层次的所有Finalize方法进行JIT编译，可确保当对象为判定为垃圾时，本机资源肯定得以释放。
-注：
-1. 内存吃紧时，可能没有足够的内存编译Finalize方法，这会阻止Finalize方法的执行，造成内存泄漏；
-2. Appdomain被宿主应用应用程序强行中断，CLR将调用CriticalFinalizerObject派生类型的Finalize方法；
-3. CriticalFinalizerObject的Finalize方法总是在非CriticalFinalizerObject类型的Finalize方法之后调用，这样，托管资源类可以在自己的Finalize中成功的访问CriticalFinalizerObject，如FileStream可以放心的在自己的Finalize方法中将数据Flush到磁盘，它知道磁盘文件还未关闭。
+> 1. 内存吃紧时，可能没有足够的内存编译Finalize方法，这会阻止Finalize方法的执行，造成内存泄漏；
+> 2. Appdomain被宿主应用应用程序强行中断，CLR将调用CriticalFinalizerObject派生类型的Finalize方法；
+> 3. CriticalFinalizerObject的Finalize方法总是在非CriticalFinalizerObject类型的Finalize方法之后调用，这样，托管资源类可以在自己的Finaliz
+
+e中成功的访问CriticalFinalizerObject，如FileStream可以放心的在自己的Finalize方法中将数据Flush到磁盘，它知道磁盘文件还未关闭。
 使用：FileStream的内部实现就是包装了一个SafeFileHandle，该类间接继承自SafeHandle，从而确保文件句柄总可以释放。
 实例：[FileStreamGC实例]([BC]FileStreamGC实例.md)
 ### 3.3 Dispose模式
