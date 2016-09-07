@@ -1,0 +1,1 @@
+## [WeakEventManager](WeakEventManager.cs)
