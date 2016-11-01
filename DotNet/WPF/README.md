@@ -6,7 +6,7 @@
 - [依赖属性](dependencyproperty.md)
 - [Behavior、TriggerAction、TargetedTriggerAction](behavior_triggeraction_targetedtriggeraction.md)
 - [MVVM中Command的实现]([B]MVVM中Command的实现.md)
-- [VisualTreeHelper](VisualTreeHelper.md)
+- [VisualTreeHelper](VisualTreeHelper.cs)
 
 ##  应用
-- [一个控件触发事件时，另外一个控件可见性更改](apply_one_change_anther.cs)
+- [一个控件触发事件时，另外一个控件可见性更改](apply_one_change_anther.md)
