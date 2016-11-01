@@ -9,4 +9,4 @@
 - [VisualTreeHelper](VisualTreeHelper.md)
 
 ##  应用
-- [一个控件触发事件时，另外一个控件可见性更改](apply_one_change_anther.md)
+- [一个控件触发事件时，另外一个控件可见性更改](apply_one_change_anther.cs)
