@@ -1,0 +1,68 @@
+    /// <summary>
+    /// 获取一个.net程序集引用程序集的代码
+    /// </summary>
+    class Program
+    {
+        private static void Main(string[] args)
+        {
+            if (args.Length < 1)
+            {
+                Console.WriteLine("you should add param of assembly path!");
+            }
+            else
+            {
+                var assembly = Assembly.LoadFile(args[0]);
+                Console.WriteLine("get reference dll start:");
+                GetReferenceAssembly(assembly.FullName);
+
+                using (var fs = new FileStream(assembly.GetName().Name + "_refdlls.txt", FileMode.Create, FileAccess.Write))
+                using (var sw = new StreamWriter(fs))
+                {
+                    foreach (var dll in _asname)
+                    {
+                        sw.WriteLine(dll);
+                    }
+                }
+
+                Console.WriteLine("press any key to exit!");
+            }
+
+            Console.Read();
+        }
+
+        private static List<string> _asname = new List<string>(); 
+
+        private static void GetReferenceAssembly(string assemblyname)
+        {
+            try
+            {
+                var assembly = Assembly.Load(assemblyname);
+                var references = assembly.GetReferencedAssemblies();
+                if (references.Length <= 0)
+                    return;
+                foreach (var sn in references)
+                {
+                    if (_asname.Contains(sn.Name) || IsSystemDll(sn.Name))
+                        continue;
+                    _asname.Add(sn.Name);
+                    Console.WriteLine(sn.Name);
+                    GetReferenceAssembly(sn.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error..."+ex.Message);
+            }
+            
+        }
+
+        private static bool IsSystemDll(string dllname)
+        {
+            if (dllname.IndexOf("ms") > -1 ||
+                dllname.IndexOf("System") > -1 ||
+                dllname.IndexOf("office") > -1 ||
+                dllname.IndexOf("Interop") > -1)
+                return true;
+            return false;
+        }
+    }
